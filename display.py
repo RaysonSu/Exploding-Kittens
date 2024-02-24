@@ -68,7 +68,7 @@ class Display:
         print("\r" + " " * width + "\r" + string, end="")
 
     def _clear_screen(self) -> None:
-        print("\033[H\033[2J", end="")
+        print("\033[H\033[3J", end="")
 
     def _wait_until_not_rendering(self) -> None:
         while self._rendering:

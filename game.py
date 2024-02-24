@@ -11,6 +11,7 @@ import time
 class Game:
     def __init__(self) -> None:
         self._display_thread: Thread = Thread(target=self._update_display)
+        self._names: list[str] = []
         self._player_order: list[int] = []
         self._ui_textboxes: dict[str, Textbox] = {}
 
@@ -25,7 +26,7 @@ class Game:
         self._ui_textboxes["activity"] = Textbox(location=(0, 18), size=(89, 9))
         self._ui_textboxes["deck_status"] = Textbox(location=(0, 9), size=(89, 1))
         self._ui_textboxes["discard_status"] = Textbox(location=(90, 0), size=(30, 18))
-        self._ui_textboxes["player_status"] = Textbox(location=(0, 2), size=(89, 5))
+        self._ui_textboxes["player_status"] = Textbox(location=(0, 2), size=(89, 6))
 
         self._initialize_textboxes()
         self._display_thread.start()
@@ -80,7 +81,13 @@ class Game:
             player_count = int(answer)
         
         for i in range(player_count):
-            self.add_player(self.ask_question(f"Player {i + 1}, what's your name? > "))
+            while True:
+                try:
+                    self.add_player(self.ask_question(f"Player {i + 1}, what's your name? > "))
+                    break
+                except ValueError as _:
+                    pass
+
     
     def _initialize_cards(self) -> None:
         for player in self.players:
@@ -147,13 +154,15 @@ class Game:
         
         self.close()
 
-
     def close(self) -> None:
         time.sleep(0.2)
         self.display_handler.close()
         self.alive = False
 
     def add_player(self, name: str) -> Player:
+        if name in self._names:
+            raise ValueError("Name already taken")
+        self._names.append(name)
         new_player: Player = Player(name, self)
         self._player_order.append(len(self._player_order))
         self.players.append(new_player)

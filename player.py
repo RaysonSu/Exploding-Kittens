@@ -96,11 +96,12 @@ class Player:
             for index, card_chosen in enumerate(self._hand):
                 if card_chosen.name == card:
                     self._hand.pop(index)
-                    break
+                    return
         else:
             for index, card_chosen in enumerate(self._hand):
                 if card_chosen.name == card.name:
                     self._hand.pop(index)
+                    return
 
     def discard_card(self, card: Card | str) -> None:
         '''Discards a given card from the hand, given an instance of the card or the card name'''
@@ -191,3 +192,10 @@ class Player:
             return chosen_card
         except UnboundLocalError as _:
             return None
+    
+    def get_card(self, name: str) -> Card:
+        for card in self._hand:
+            if card.name == name:
+                return card
+
+        raise ValueError("Card not found.")

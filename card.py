@@ -76,7 +76,20 @@ class Card(metaclass=abc.ABCMeta):
             return (False, self._owner)
 
         chosen_player: Player = choice(options)
-        chosen_player.discard_card("Nope")
+        nope: Card = chosen_player.get_card("Nope")
+
+        noped: bool
+        noper: Player
+        
+        chosen_player.remove_card(nope)
+        noped, noper = nope.nope_check()
+        game.discard_pile.add_card(nope)
+        nope.transfer_ownership(game.discard_pile)
+
+        if noped:
+            game.add_activity(f"{chosen_player.name} tried to nope {self._owner.name}'s card, but {noper.name} noped that!\n")
+            return (False, chosen_player)
+        
         return (True, chosen_player)
 
     def discard(self) -> None:
